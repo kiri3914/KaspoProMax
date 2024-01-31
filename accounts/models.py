@@ -1,6 +1,6 @@
 from django.db import models, transaction
 from django.contrib.auth.models import User
-from .utils import get_exchange_rate, convert
+from .utils import validation_currency, convert
 from decimal import Decimal
 from django.forms import ValidationError
 
@@ -13,7 +13,7 @@ class Profile(models.Model):
 
 
 class Currency(models.Model):
-    name = models.CharField(max_length=3)
+    name = models.CharField(max_length=3, validators=[validation_currency])
     description = models.CharField(max_length=50)
     symbol = models.CharField(max_length=1)
 
