@@ -11,13 +11,13 @@ def get_data(currency):
 
 
 
-def get_exchange_rate(currency_input, currency_output):
-    data = get_data(currency_input)
-    return data["conversion_rates"][currency_output]
+def get_exchange_rate(from_currency, to_currency):
+    data = get_data(from_currency)
+    return data["conversion_rates"][to_currency]
 
 
-def convert(amount, currency_input, currency_output):
-    exchange_rate = get_exchange_rate(currency_input, currency_output)
+def convert(amount, from_currency, to_currency):
+    exchange_rate = get_exchange_rate(from_currency, to_currency)
     return amount * Decimal(exchange_rate)
 
 
