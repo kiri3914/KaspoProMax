@@ -60,7 +60,7 @@ class Transaction(models.Model):
     date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'Transaction from {self.sender.username} to {self.receiver.username}'
+        return f'{self.sender.username} -> {self.receiver.username} \t {self.amount} {self.currency.symbol}'
 
     @transaction.atomic
     def save(self, *args, **kwargs):
