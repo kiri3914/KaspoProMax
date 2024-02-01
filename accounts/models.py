@@ -5,8 +5,10 @@ from decimal import Decimal
 from django.forms import ValidationError
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     image = models.ImageField(default='default.jpg', upload_to='profile_pics')
+    phone = models.CharField(max_length=15, blank=True)
+
 
     def __str__(self):
         return f'{self.user.username} Profile'
@@ -65,25 +67,24 @@ class Transaction(models.Model):
     @transaction.atomic
     def save(self, *args, **kwargs):
         try:
-            with transaction.atomic():
-                # Получение объектов карт отправителя и получателя из базы данных
-                sender_card = Card.objects.get(owner=self.sender)
-                receiver_card = Card.objects.get(owner=self.receiver)
+            # Получение объектов карт отправителя и получателя из базы данных
+            sender_card = Card.objects.get(owner=self.sender)
+            receiver_card = Card.objects.get(owner=self.receiver)
 
-                # Проверка, достаточно ли средств у отправителя (учитывая возможную конвертацию валют)
-                if sender_card.currency != self.currency:
-                    converted_amount = Decimal(convert(self.amount, self.currency.name, sender_card.currency.name))
-                else:
-                    converted_amount = self.amount
+            # Проверка, достаточно ли средств у отправителя (учитывая возможную конвертацию валют)
+            if sender_card.currency != self.currency:
+                converted_amount = Decimal(convert(self.amount, self.currency.name, sender_card.currency.name))
+            else:
+                converted_amount = self.amount
 
-                if sender_card.balance < converted_amount:
-                    raise ValidationError('Недостаточно средств на карте отправителя для совершения транзакции.')
+            if sender_card.balance < converted_amount:
+                raise ValidationError('Недостаточно средств на карте отправителя для совершения транзакции.')
 
-                # Debit the sender's card and credit the receiver's card
-                sender_card.debit(self.amount, self.currency.name)
-                receiver_card.credit(self.amount, self.currency.name)
+            # Debit the sender's card and credit the receiver's card
+            sender_card.debit(self.amount, self.currency.name)
+            receiver_card.credit(self.amount, self.currency.name)
 
-                super().save(*args, **kwargs)
+            super().save(*args, **kwargs)
 
         except Exception as e:
             # Handle exceptions if needed
