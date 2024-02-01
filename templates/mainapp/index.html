@@ -4,4 +4,9 @@
 
 <h1>Курсы валют</h1>
 
+{% for i in data %}
+<p>{{ i.currency }} - {{ i.value }}</p>
+
+{% endfor %}
+
 {% endblock content %}
