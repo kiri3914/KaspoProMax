@@ -5,8 +5,9 @@ from decimal import Decimal
 from django.forms import ValidationError
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     image = models.ImageField(default='default.jpg', upload_to='profile_pics')
+    phone = models.CharField(max_length=12)
 
     def __str__(self):
         return f'{self.user.username} Profile'

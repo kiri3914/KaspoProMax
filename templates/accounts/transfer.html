@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+  <div class="container">
+   
+    <div class="col-md-offset-3 col-md-6">
+        <h1>Transfer Money</h1>
+    
+    <form method="POST" action="{% url 'transfer_money' %}">
+      {% csrf_token %}
+      
+      {% if messages %}
+        {% for message in messages %}
+            {% if message.tags %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %}" role="alert">
+                <strong>{% if message.tags == 'error' %}{% elif message.tags == 'success' %}{% endif %}</strong>
+                {{ message }}
+            </div>
+            {% endif %}
+        {% endfor %}
+        {% endif %}
+
+
+      <div class="form-group">
+        <label for="receiver">Receiver Phone:</label>
+        <input type="tel" class="form-control" id="receiver" name="receiver" placeholder="+7 700 700 00 00" required >
+      </div>
+
+      <div class="form-group">
+        <label for="amount">Amount:</label>
+        <input type="number" class="form-control" id="amount" name="amount" step="0.01" required>
+      </div>
+
+      <div class="form-group">
+        <label for="currency">Currency:</label>
+        <select class="form-control" id="currency" name="currency" required>
+          {% for currency in currencies %}
+            <option value="{{ currency.id }}">{{ currency.name }} - {{ currency.symbol }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Перевести</button>
+    </form>
+</div>
+{% endblock %}
